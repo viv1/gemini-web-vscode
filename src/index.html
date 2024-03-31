@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <style>
+        /* General styles, variables for light theme */
+        :root {
+            --bg-color: #FFFFFF;
+            --text-color: #000000;
+            --user-message-bg: #dcf8c6;
+            --system-message-bg: #ebebeb;
+            --button-bg: #f0f0f0;
+            --button-text: #000000;
+            --code-bg: #f5f5f5;
+            --code-text: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        /* Dark theme overrides */
+        [data-theme="dark"] {
+            --bg-color: #36393f;
+            --text-color: #FFFFFF;
+            --user-message-bg: #4f545c;
+            --system-message-bg: #424549;
+            --button-bg: #4f545c;
+            --button-text: #FFFFFF;
+            --code-bg: #2a2d32;
+            --code-text: #ddd;
+            --border-color: #555555;
+        }
+
+        /* Apply CSS variables in the styles */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Chat container taking full space except for settings and toggle */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* CSS styles */
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 40px); /* Adjust height to ensure it fills the space */
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px 0 rgba(0,0,0,0.2);
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #chat-container {
+            
+        }
+
+        #message-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+            transition: background-color 0.3s;
+        }
+
+        #message-form {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        #message-input, #image-input {
+            flex: 1;
+            margin-right: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        /* Styles for buttons */
+        button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        /* New styles for the user and system messages */
+        .message {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 10px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .user-message {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+        
+        .message.user-message {
+            background-color: var(--message-user-bg);
+        }
+
+        .system-message {
+            background-color: #ebebeb;
+            align-self: flex-start;
+        }
+
+        .message.system-message {
+            background-color: var(--message-system-bg);
+            /* ... */
+        }
+
+        /* Style for file upload icon */
+        #file-upload-label {
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        #image-input {
+            display: none;
+        }
+
+        /* Thumbnail styles */
+        #thumbnail-container {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        #thumbnail-container img {
+            max-width: 50px;
+            max-height: 50px;
+            margin-right: 10px;
+        }
+
+        /* Settings icon */
+        #settings-icon {
+            cursor: pointer;
+            font-size: 50px; /* Adjust size as needed */
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 0;
+            margin-top: -10px;
+        }
+
+        /* Dialog box styles */
+        #settings-dialog {
+            display: none;
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 30%; /* Adjust width as needed */
+            height: 100%;
+            background-color: var(--bg-color);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #settings-dialog h2 {
+            margin-top: 25px;
+        }
+
+        #settings-dialog input,
+        #settings-dialog button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+
+        .close-button {
+            font-size: 20px; /* Make it larger */
+            cursor: pointer;
+            position: absolute;
+            right: 10px; /* Positioning to the right */
+            top: 5px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            padding: 0;
+        }
+
+        /* New icon styles */
+        .icon {
+            cursor: pointer;
+            font-size: 24px; /* Adjust size as needed */
+        }
+
+        /* Styles for code blocks and copy button */
+        .code-block {
+            position: relative;
+            background-color: var(--code-bg);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+        .thumbnail-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .thumbnail-wrapper img {
+            border: 1px solid var(--thumbnail-border);
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Styles for code snippet area */
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        textarea {
+            width: calc(100% - 50px); /* Adjust width as needed */
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: vertical; /* Allow vertical resizing */
+            overflow: auto; /* Show scrollbar when necessary */
+            background-color: var(--input-bg-color);
+            color: var(--input-text-color);
+            font-family: inherit; /* To match other inputs/text */
+            min-height: 50px; /* Minimum height */
+            max-height: 150px; /* Maximum height */
+        }
+
+        /* Optional: Import a Google Font for the user input and messages */
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+        
+        /* Applying the font to user input and messages */
+        #message-input, .message {
+            font-family: 'Open+Sans', sans-serif;
+        }
+
+        #message-input {
+            background-color: var(--input-bg-color);
+            color: var(--input-text-color);
+        }
+
+        /* Styles for the dark mode toggle switch */
+        .theme-switch-wrapper {
+            display: inline-table;
+            align-items: center;
+            position: absolute;
+            right: 80px; /* Adjust based on settings icon size */
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #666;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+    </style>
+    <!-- Importing Prism.js for code snippet highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
+    <!-- Importing FontAwesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="chat-container">
+       <!-- Settings and toggle buttons -->
+       <div style="align-self: flex-end; padding: 10px;">
+            <button id="settings-icon">&#9881;</button> <!-- Settings icon -->
+            <div class="theme-switch-wrapper">
+                <input type="checkbox" id="dark-mode-toggle" class="theme-switch" />
+                <label for="dark-mode-toggle" class="slider"></label>
+            </div>
+        </div>
+
+        <div id="message-area">
+            <!-- Add a dummy code snippet for display -->
+            <pre><code class="language-js">console.log('Hello, World!');</code></pre>
+        </div>
+        <div id="thumbnail-container"></div> <!-- Container for thumbnails -->
+        <form id="message-form">
+            <label id="file-upload-label" for="image-input"><i class="fas fa-paperclip icon"></i></label> <!-- Clip icon -->
+            <input type="file" id="image-input" accept="image/*">
+            <textarea id="message-input" placeholder="Type a message..." rows="2"></textarea>
+            <button type="submit">Send</button>
+        </form>
+
+    </div>
+    
+    <!-- Settings dialog -->
+    <div id="settings-dialog">
+        <button class="close-button">&#10006;</button> <!-- X icon -->
+        <h2>Settings</h2>
+        <input type="text" id="settings-input" placeholder="Enter value...">
+        <button id="save-settings">Save</button>
+    </div>
+
+    <!-- Prism JS for code highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script>
+        // JavaScript code
+
+        const textarea = document.getElementById('message-input');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto'; // Reset height to auto to allow shrink
+            this.style.height = this.scrollHeight + 'px'; // Adjust height based on content
+        });
+
+        // Dark mode toggle functionality
+        // Toggle dark mode
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const form = document.getElementById('message-form');
+            const messageArea = document.getElementById('message-area');
+
+            // Function to add system message
+            function addSystemMessage() {
+                const message = document.createElement('div');
+                message.classList.add('message', 'system-message');
+                message.innerHTML = `
+                    <div>Here's a dummy response from the system.</div>
+                    <div class="code-block">
+                        <button class="copy-button">Copy</button>
+                        <pre><code class="language-js">console.log('Hello, world!');</code></pre>
+                    </div>
+                `;
+                messageArea.appendChild(message);
+                Prism.highlightAll(); // Highlight the code block
+            }
+
+            const imageInput = document.getElementById('image-input');
+            const thumbnailContainer = document.getElementById('thumbnail-container');
+
+            imageInput.addEventListener('change', function() {
+                // Clear existing thumbnails
+                thumbnailContainer.innerHTML = ''; 
+                Array.from(this.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const wrapper = document.createElement('div');
+                        wrapper.classList.add('thumbnail-wrapper');
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.classList.add('remove-image');
+                        removeBtn.textContent = 'X';
+                        removeBtn.onclick = function() {
+                            wrapper.remove();
+                            // Remove file from the FileList
+                            imageInput.files = removeFileFromFileList(imageInput.files, index);
+                        };
+                        
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(removeBtn);
+                        thumbnailContainer.appendChild(wrapper);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            // Function to remove a file from the FileList
+            function removeFileFromFileList(fileList, indexToRemove) {
+                const dt = new DataTransfer();
+                for (let i = 0; i < fileList.length; i++) {
+                    if (indexToRemove !== i) {
+                        dt.items.add(fileList[i]);
+                    }
+                }
+                return dt.files;
+            }
+
+            // Copy to clipboard functionality
+            messageArea.addEventListener('click', function(e) {
+                if (e.target.classList.contains('copy-button')) {
+                    const code = e.target.nextElementSibling.textContent;
+                    navigator.clipboard.writeText(code).then(() => {
+                        e.target.textContent = 'Copied!';
+                        setTimeout(() => {
+                            e.target.textContent = 'Copy';
+                        }, 2000);
+                    });
+                }
+            });
+
+            /* ... (previous JavaScript code) ... */
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                
+                const messageInput = document.getElementById('message-input');
+                const imageInput = document.getElementById('image-input');
+
+                // Handle text message
+                if (messageInput.value.trim() !== '') {
+                    const div = document.createElement('div');
+                    div.textContent = messageInput.value;
+                    messageArea.appendChild(div);
+                    messageInput.value = '';
+                }
+
+                // Handle image upload
+                if (imageInput.files.length > 0) {
+                    const file = imageInput.files[0];
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.onload = () => URL.revokeObjectURL(img.src); // Release object URL after loading
+                    messageArea.appendChild(img);
+                    imageInput.value = '';
+                }
+                
+                addSystemMessage(); // Add a dummy system response
+
+                // Scroll to the bottom
+                messageArea.scrollTop = messageArea.scrollHeight;
+            });
+
+            const settingsIcon = document.getElementById('settings-icon');
+            const settingsDialog = document.getElementById('settings-dialog');
+            const closeSettings = document.querySelector('.close-button');
+            const saveSettingsButton = document.getElementById('save-settings');
+
+            // Handle settings dialog
+            settingsIcon.onclick = () => {
+                settingsDialog.style.display = 'block';
+            };
+
+            closeSettings.onclick = () => {
+                settingsDialog.style.display = 'none';
+            };
+
+            saveSettingsButton.onclick = () => {
+                // Logic to save settings
+                // Read the value from the input
+                const settingsValue = document.getElementById('settings-input').value;
+                console.log('Settings value:', settingsValue); // For demonstration
+                settingsDialog.style.display = 'none';
+            };
+
+            // Example code for highlighting
+            const exampleCode = document.createElement('pre');
+            exampleCode.className = 'language-javascript';
+            exampleCode.innerHTML = `<code>const greeting = 'Hello, world!';\nconsole.log(greeting);</code>`;
+            messageArea.appendChild(exampleCode);
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html>
