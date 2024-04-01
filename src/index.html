@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
     <style>
+        /* Import a Google Font for the user input and messages */
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
         /* General styles, variables for light theme */
         :root {
             --bg-color: #FFFFFF;
@@ -15,12 +18,13 @@
             --button-text: #000000;
             --code-bg: #f5f5f5;
             --code-text: #333333;
-            --border-color: #e0e0e0;
+            --border-color: #333333;
+            --message-box: #d9c7c7;
         }
 
         /* Dark theme overrides */
         [data-theme="dark"] {
-            --bg-color: #36393f;
+            --bg-color: #4a4c50;
             --text-color: #FFFFFF;
             --user-message-bg: #4f545c;
             --system-message-bg: #424549;
@@ -29,6 +33,7 @@
             --code-bg: #2a2d32;
             --code-text: #ddd;
             --border-color: #555555;
+            --message-box: #333333;
         }
 
         /* Apply CSS variables in the styles */
@@ -60,13 +65,11 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
-        }
-
-        #chat-container {
-            
+            align-items: center;
         }
 
         #message-area {
+            width: 100%;
             flex: 1;
             padding: 20px;
             overflow-y: auto;
@@ -78,6 +81,7 @@
             display: flex;
             padding: 10px;
             border-top: 1px solid #ddd;
+            width: 90%;
         }
 
         #message-input, #image-input {
@@ -147,7 +151,7 @@
             margin-right: 10px;
         }
 
-        /* Settings icon */
+        /* Settings */
         #settings-icon {
             cursor: pointer;
             font-size: 50px; /* Adjust size as needed */
@@ -158,7 +162,6 @@
             margin-top: -10px;
         }
 
-        /* Dialog box styles */
         #settings-dialog {
             display: none;
             position: fixed;
@@ -177,6 +180,7 @@
         }
 
         #settings-dialog input,
+
         #settings-dialog button {
             width: 100%;
             padding: 10px;
@@ -212,14 +216,15 @@
         }
 
         .copy-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            display: block;
+            background-color: var(--code-bg);
+            color: var(--text-color);
             cursor: pointer;
-            background: #e0e0e0;
-            border: none;
-            border-radius: 4px;
-            padding: 5px;
+            height: fit-content;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
         }
 
         .thumbnail-wrapper {
@@ -243,17 +248,6 @@
             cursor: pointer;
         }
 
-        /* Styles for code snippet area */
-        pre {
-            background-color: var(--code-bg);
-            color: var(--code-text);
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 4px;
-            overflow-x: auto;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
         textarea {
             width: calc(100% - 50px); /* Adjust width as needed */
             padding: 10px;
@@ -267,9 +261,6 @@
             min-height: 50px; /* Minimum height */
             max-height: 150px; /* Maximum height */
         }
-
-        /* Optional: Import a Google Font for the user input and messages */
-        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
         
         /* Applying the font to user input and messages */
         #message-input, .message {
@@ -332,6 +323,76 @@
             transform: translateX(26px);
         }
 
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Styles for code snippet area */
+        pre {
+            display: block;
+            position: relative;
+            background-color: var(--code-bg) !important;
+            color: var(--code-text);
+            border: 1px solid var(--border-color) !important;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+      pre::-webkit-scrollbar {
+        display: none;
+      }
+
+      .message-box {
+        padding: 10px;
+        margin: 10px;
+        background: var(--message-box);
+        border-radius: 8px;
+        color: var(--code-text);
+        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+      }
+
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid #3498db;
+        width: 40px;
+        height: 40px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+        margin-bottom: 16px;
+      }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+        }
+
+        code[class*=language-],pre[class*=language-] {
+            text-shadow: none !important;
+            color: var(--text-color) !important;
+        }
+
+        .user-icon {
+            padding: 10px;
+        }
+
+        button:disabled {
+            background-color: #ccc; /* Gray background to indicate it's disabled */
+            color: #666; /* Dim the text color */
+            cursor: not-allowed; /* Change cursor to indicate that the button is not clickable */
+            border: 1px solid #999; /* Optional: Change the border color */
+        }
+
     </style>
     <!-- Importing Prism.js for code snippet highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
@@ -349,16 +410,14 @@
             </div>
         </div>
 
-        <div id="message-area">
-            <!-- Add a dummy code snippet for display -->
-            <pre><code class="language-js">console.log('Hello, World!');</code></pre>
-        </div>
+        <div id="message-area"></div>
         <div id="thumbnail-container"></div> <!-- Container for thumbnails -->
+        <div id="spinner" class="spinner" style="display: none;"></div>
         <form id="message-form">
             <label id="file-upload-label" for="image-input"><i class="fas fa-paperclip icon"></i></label> <!-- Clip icon -->
             <input type="file" id="image-input" accept="image/*">
             <textarea id="message-input" placeholder="Type a message..." rows="2"></textarea>
-            <button type="submit">Send</button>
+            <button id="send-button" type="submit">Send</button>
         </form>
 
     </div>
@@ -368,50 +427,119 @@
         <button class="close-button">&#10006;</button> <!-- X icon -->
         <h2>Settings</h2>
         <input type="text" id="settings-input" placeholder="Enter value...">
+        <div id="error-message" class="error" style="display: none;"></div>
         <button id="save-settings">Save</button>
     </div>
 
+    <!-- Markdown to HTML converter: https://github.com/showdownjs/showdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <!-- Prism JS for code highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
-    <script>
-        // JavaScript code
+    <script type="module">
+        import {
+            GoogleGenerativeAI,
+            HarmCategory,
+            HarmBlockThreshold,
+        } from "https://cdn.skypack.dev/@google/generative-ai";
 
-        const textarea = document.getElementById('message-input');
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto'; // Reset height to auto to allow shrink
-            this.style.height = this.scrollHeight + 'px'; // Adjust height based on content
-        });
+        // Get gemini api key if present in local storage 
+        let geminiApiKey = localStorage.getItem('gemini-api-key');
+        document.getElementById('settings-input').value = geminiApiKey;
 
-        // Dark mode toggle functionality
-        // Toggle dark mode
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
-        darkModeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
-        });
-        
+        // GeminiChat initialized instance
+        let geminiChat = null;
+
+        // Function to add copy buttons and functionality
+        // TODO: add random id for each code section
+        function addCopyButtons(html) {
+            let tempContainer = document.createElement('div');
+            tempContainer.innerHTML = html;
+
+            tempContainer.querySelectorAll('pre code').forEach((block, index) => {
+                const btn = document.createElement('button');
+                btn.innerHTML = '<i class="fas fa-copy"></i>';
+                btn.className = 'copy-button';
+                btn.setAttribute('data-copy-target-id', `codeBlock-${index}`);
+                btn.textContent = "Copy";
+                
+                block.setAttribute('id', `codeBlock-${index}`);
+                block.parentNode.insertBefore(btn, block);
+            });
+            return tempContainer.innerHTML;
+        }
+
+        function getGeminiChatInstance() {
+            if (geminiChat) return geminiChat;
+            
+            const genAI = new GoogleGenerativeAI(geminiApiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
+
+            const config = {
+                temperature: 1,
+                topK: 1,
+                topP: 1,
+                maxOutputTokens: 8192,
+            };
+
+            const safetyConfig = [
+                {
+                    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+                },
+                {
+                    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+                }
+            ];
+
+            geminiChat = model.startChat({config, safetyConfig});
+            return geminiChat;
+      }
+
+        function addSystemMessage(response) {
+            const messageArea = document.getElementById('message-area');
+            const message = document.createElement('div');
+            message.classList.add('message', 'message-box');
+            message.innerHTML = response;
+            messageArea.appendChild(message);
+            Prism.highlightAll(); // Highlight the code block
+
+            document.querySelectorAll(".copy-button").forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const textArea = document.createElement('textarea');
+                    // textArea.style.display = "hidden";
+                    textArea.value = btn.nextSibling.textContent;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+
+                    btn.textContent = "Copied!"
+                    setTimeout(() => {
+                        btn.textContent = 'Copy';
+                    }, 2000);
+                });
+            })
+        }
+
+        async function sendToGemini(prompt) {
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'block'; // Show the spinner
+
+            const chat = await getGeminiChatInstance();
+            const result = await chat.sendMessage(prompt);
+            const response = result.response;
+            const converter = new showdown.Converter();
+            const html = converter.makeHtml(response.text());
+            addSystemMessage(addCopyButtons(html));
+            spinner.style.display = 'none'; // Hide the spinner
+        }
+
+        // On Document Load, add all event listeners
         document.addEventListener('DOMContentLoaded', () => {
 
             const form = document.getElementById('message-form');
             const messageArea = document.getElementById('message-area');
-
-            // Function to add system message
-            function addSystemMessage() {
-                const message = document.createElement('div');
-                message.classList.add('message', 'system-message');
-                message.innerHTML = `
-                    <div>Here's a dummy response from the system.</div>
-                    <div class="code-block">
-                        <button class="copy-button">Copy</button>
-                        <pre><code class="language-js">console.log('Hello, world!');</code></pre>
-                    </div>
-                `;
-                messageArea.appendChild(message);
-                Prism.highlightAll(); // Highlight the code block
-            }
 
             const imageInput = document.getElementById('image-input');
             const thumbnailContainer = document.getElementById('thumbnail-container');
@@ -456,36 +584,49 @@
                 return dt.files;
             }
 
-            // Copy to clipboard functionality
-            messageArea.addEventListener('click', function(e) {
-                if (e.target.classList.contains('copy-button')) {
-                    const code = e.target.nextElementSibling.textContent;
-                    navigator.clipboard.writeText(code).then(() => {
-                        e.target.textContent = 'Copied!';
-                        setTimeout(() => {
-                            e.target.textContent = 'Copy';
-                        }, 2000);
-                    });
-                }
-            });
-
-            /* ... (previous JavaScript code) ... */
-
+            // On input submit handling
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
-                
+
+                const sendButton = document.getElementById('send-button');
+
+                // When API key is not set
+                if (geminiApiKey.trim() === '') {
+                    const saveSettingsErrorMessage = document.getElementById('error-message');
+                    saveSettingsErrorMessage.textContent = 'Please enter a value.';
+                    saveSettingsErrorMessage.style.display = 'block';
+
+                    const settingsIcon = document.getElementById('settings-icon');
+                    settingsIcon.click();
+                    return;
+                }
+
                 const messageInput = document.getElementById('message-input');
                 const imageInput = document.getElementById('image-input');
+                const messageArea = document.getElementById('message-area');
 
                 // Handle text message
+                // TODO: should not allow empty input
                 if (messageInput.value.trim() !== '') {
+                    sendButton.disabled = true;
                     const div = document.createElement('div');
-                    div.textContent = messageInput.value;
+                    div.classList.add('message-box');
+
+                    const iconSpan = document.createElement('span');
+                    iconSpan.classList.add('user-icon');
+                    iconSpan.innerHTML = '<i class="fas fa-user"></i>';  // Using a generic user icon from FontAwesome
+                    div.appendChild(iconSpan);
+
+                    const messageSpan = document.createElement('span');
+                    messageSpan.textContent = messageInput.value;
+                    div.appendChild(messageSpan);
+
                     messageArea.appendChild(div);
                     messageInput.value = '';
                 }
 
                 // Handle image upload
+                // TODO: fix this
                 if (imageInput.files.length > 0) {
                     const file = imageInput.files[0];
                     const img = document.createElement('img');
@@ -494,19 +635,21 @@
                     messageArea.appendChild(img);
                     imageInput.value = '';
                 }
-                
-                addSystemMessage(); // Add a dummy system response
 
+                sendToGemini(messageArea.lastChild.textContent);
+                
                 // Scroll to the bottom
                 messageArea.scrollTop = messageArea.scrollHeight;
+
+                sendButton.disabled = false;
             });
 
+            // Handle settings dialog
             const settingsIcon = document.getElementById('settings-icon');
             const settingsDialog = document.getElementById('settings-dialog');
             const closeSettings = document.querySelector('.close-button');
             const saveSettingsButton = document.getElementById('save-settings');
 
-            // Handle settings dialog
             settingsIcon.onclick = () => {
                 settingsDialog.style.display = 'block';
             };
@@ -517,18 +660,33 @@
 
             saveSettingsButton.onclick = () => {
                 // Logic to save settings
-                // Read the value from the input
                 const settingsValue = document.getElementById('settings-input').value;
-                console.log('Settings value:', settingsValue); // For demonstration
+                geminiApiKey = settingsValue.trim();
+                localStorage.setItem('gemini-api-key', geminiApiKey);
+
+                if (geminiApiKey !== '') {
+                    const saveSettingsErrorMessage = document.getElementById('error-message');
+                    saveSettingsErrorMessage.style.display = 'none';
+                }
                 settingsDialog.style.display = 'none';
             };
 
-            // Example code for highlighting
-            const exampleCode = document.createElement('pre');
-            exampleCode.className = 'language-javascript';
-            exampleCode.innerHTML = `<code>const greeting = 'Hello, world!';\nconsole.log(greeting);</code>`;
-            messageArea.appendChild(exampleCode);
-            Prism.highlightAll();
+             // Allow Textarea to expand dynamically
+            const textarea = document.getElementById('message-input');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto'; // Reset height to auto to allow shrink
+                this.style.height = this.scrollHeight + 'px'; // Adjust height based on content
+            });
+
+            // Dark mode toggle functionality
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+            });
         });
     </script>
 </body>
