@@ -607,7 +607,7 @@
                 const messageArea = document.getElementById('message-area');
 
                 // Handle text message
-                // TODO: should not allow empty input
+                // does not allow empty input
                 if (messageInput.value.trim() !== '') {
                     sendButton.disabled = true;
                     const div = document.createElement('div');
@@ -624,6 +624,11 @@
 
                     messageArea.appendChild(div);
                     messageInput.value = '';
+
+                    sendToGemini(messageArea.lastChild.textContent);
+                    // Scroll to the bottom
+                    messageArea.scrollTop = messageArea.scrollHeight;
+                    sendButton.disabled = false;  // disable send button
                 }
 
                 // Handle image upload
@@ -637,12 +642,8 @@
                     imageInput.value = '';
                 }
 
-                sendToGemini(messageArea.lastChild.textContent);
                 
-                // Scroll to the bottom
-                messageArea.scrollTop = messageArea.scrollHeight;
-
-                sendButton.disabled = false;
+                
             });
 
             // Handle settings dialog
