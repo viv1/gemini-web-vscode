@@ -690,8 +690,13 @@
             saveSettingsButton.onclick = () => {
                 // Logic to save settings
                 const settingsValue = document.getElementById('settings-input').value;
-                geminiApiKey = settingsValue.trim();
-                localStorage.setItem('gemini-api-key', geminiApiKey);
+                const newGeminiApiKey = settingsValue.trim();
+
+                if (newGeminiApiKey !== geminiApiKey) {
+                    geminiApiKey = newGeminiApiKey;
+                    localStorage.setItem('gemini-api-key', geminiApiKey);
+                    geminiChat = null;  // remove existing gemini chat instance to force it to create a new one
+                }
 
                 if (geminiApiKey !== '') {
                     const saveSettingsErrorMessage = document.getElementById('error-message');
