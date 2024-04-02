@@ -451,16 +451,16 @@
         let geminiChat = null;
 
         // Function to add copy buttons and functionality
-        // TODO: add random id for each code section
         function addCopyButtons(html) {
             let tempContainer = document.createElement('div');
             tempContainer.innerHTML = html;
 
             tempContainer.querySelectorAll('pre code').forEach((block, index) => {
+                const randomNumber = Math.floor(Math.random()* 8192)
                 const btn = document.createElement('button');
                 btn.innerHTML = '<i class="fas fa-copy"></i>';
                 btn.className = 'copy-button';
-                btn.setAttribute('data-copy-target-id', `codeBlock-${index}`);
+                btn.setAttribute('data-copy-target-id', `codeBlock-${randomNumber}-${index}`); // add random id for each code section
                 btn.textContent = "Copy";
                 
                 block.setAttribute('id', `codeBlock-${index}`);
