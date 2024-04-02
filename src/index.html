@@ -394,6 +394,11 @@
             border: 1px solid #999; /* Optional: Change the border color */
         }
 
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+
     </style>
     <!-- Importing Prism.js for code snippet highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
@@ -497,10 +502,13 @@
             return geminiChat;
       }
 
-        function addSystemMessage(response) {
+        function addSystemMessage(response, is_error) {
             const messageArea = document.getElementById('message-area');
             const message = document.createElement('div');
             message.classList.add('message', 'message-box');
+            if(is_error) {
+                message.classList.add('error-message');
+            }
             message.innerHTML = response;
             messageArea.appendChild(message);
             Prism.highlightAll(); // Highlight the code block
@@ -527,12 +535,31 @@
             const spinner = document.getElementById('spinner');
             spinner.style.display = 'block'; // Show the spinner
 
-            const chat = await getGeminiChatInstance();
-            const result = await chat.sendMessage(prompt);
-            const response = result.response;
-            const converter = new showdown.Converter();
-            const html = converter.makeHtml(response.text());
-            addSystemMessage(addCopyButtons(html));
+            let chat, result, error
+            try {
+                chat = await getGeminiChatInstance();
+            } catch(e) {
+                console.warn("Error initializing gemini chat instance:", e)
+                error = e
+            }
+            if (chat) {
+                try {
+                    result = await chat.sendMessage(prompt);
+                } catch(e) {
+                    console.warn("Error sending message:", e)
+                    error = e
+                }
+            }
+
+            if(error) {
+                addSystemMessage(error, true)  // Display error to the user
+            }
+            if(result) {
+                const response = result.response;
+                const converter = new showdown.Converter();
+                const html = converter.makeHtml(response.text());
+                addSystemMessage(addCopyButtons(html));
+            }
             spinner.style.display = 'none'; // Hide the spinner
         }
 
