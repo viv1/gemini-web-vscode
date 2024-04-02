@@ -565,6 +565,7 @@
 
         // On Document Load, add all event listeners
         document.addEventListener('DOMContentLoaded', () => {
+            document.documentElement.setAttribute('data-theme', 'dark'); // Default to dark mode
 
             const form = document.getElementById('message-form');
             const messageArea = document.getElementById('message-area');
@@ -715,7 +716,7 @@
             // Dark mode toggle functionality
             const darkModeToggle = document.getElementById('dark-mode-toggle');
             darkModeToggle.addEventListener('change', function() {
-                if (this.checked) {
+                if (!this.checked) {
                     document.documentElement.setAttribute('data-theme', 'dark');
                 } else {
                     document.documentElement.removeAttribute('data-theme');
