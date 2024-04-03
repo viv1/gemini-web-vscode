@@ -399,6 +399,10 @@
             font-weight: bold;
         }
 
+        .message-image {
+            width: 100%;
+        }
+
     </style>
     <!-- Importing Prism.js for code snippet highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
@@ -474,7 +478,19 @@
             return tempContainer.innerHTML;
         }
 
-        function getGeminiChatInstance() {
+        // Converts a File object to a GoogleGenerativeAI.Part object.
+        async function fileToGenerativePart(file) {
+            const base64EncodedDataPromise = new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+            return {
+                inlineData: { data: await base64EncodedDataPromise, mimeType: file.type },
+            };
+        }
+
+        async function getGeminiChatInstance() {
             if (geminiChat) return geminiChat;
             
             const genAI = new GoogleGenerativeAI(geminiApiKey);
@@ -498,7 +514,22 @@
                 }
             ];
 
-            geminiChat = model.startChat({config, safetyConfig});
+            const initialContext = {
+                history: [
+                    {
+                        role: "user",
+                        parts: [{ text: "Hello, provide me all answers in clear and concise terms." }],
+                    },
+                    {
+                        role: "model",
+                        parts: [{ text: "Sure" }],
+                    }
+                ],
+                generationConfig: config, 
+                safetyConfig
+            }
+
+            geminiChat = model.startChat(initialContext);
             return geminiChat;
       }
 
@@ -531,23 +562,45 @@
             })
         }
 
-        async function sendToGemini(prompt) {
+        async function getGeminiVisionResponse(prompt, files) {
+            const imageParts = await Promise.all(
+                [...files].map(fileToGenerativePart),
+            );
+
+            const genAI = new GoogleGenerativeAI(geminiApiKey);
+            const geminiVisionModel = await genAI.getGenerativeModel({
+                model: imageParts.length ? "gemini-pro-vision" : "gemini-pro",
+            });
+            const result = await geminiVisionModel.generateContent([prompt, ...imageParts]);
+            return result
+        }
+
+        async function sendToGemini(prompt, file) {
             const spinner = document.getElementById('spinner');
             spinner.style.display = 'block'; // Show the spinner
 
             let chat, result, error
-            try {
-                chat = await getGeminiChatInstance();
-            } catch(e) {
-                console.warn("Error initializing gemini chat instance:", e)
-                error = e
-            }
-            if (chat) {
-                try {
-                    result = await chat.sendMessage(prompt);
+            if (file) { // call vision pro if any image exists
+                try{
+                    result = await getGeminiVisionResponse(prompt, [file])
                 } catch(e) {
-                    console.warn("Error sending message:", e)
+                    console.warn("Error calling gemini pro vision:", e)
                     error = e
+                }
+            } else { // call gemini-pro if no image exists
+                try {
+                    chat = await getGeminiChatInstance();
+                } catch(e) {
+                    console.warn("Error initializing gemini chat instance:", e)
+                    error = e
+                }
+                if (chat) {  // only send message if chat instance initializes successfully
+                    try {
+                        result = await chat.sendMessage(prompt);
+                    } catch(e) {
+                        console.warn("Error sending message:", e)
+                        error = e
+                    }
                 }
             }
 
@@ -555,7 +608,7 @@
                 addSystemMessage(error, true)  // Display error to the user
             }
             if(result) {
-                const response = result.response;
+                const response = await result.response;
                 const converter = new showdown.Converter();
                 const html = converter.makeHtml(response.text());
                 addSystemMessage(addCopyButtons(html));
@@ -653,24 +706,29 @@
                     messageArea.appendChild(div);
                     messageInput.value = '';
 
-                    sendToGemini(messageArea.lastChild.textContent);
+                    let imageFile
+                    // Handle image upload
+                    if (imageInput.files.length > 0) {
+                        const file = imageInput.files[0];
+                        const img = document.createElement('img');
+                        img.classList.add('message-image')
+                        img.src = URL.createObjectURL(file);
+                        img.onload = () => URL.revokeObjectURL(img.src); // Release object URL after loading
+                        messageArea.appendChild(img);
+                        imageInput.value = '';
+                        imageFile = file
+
+                        // Remove image thumbnail
+                        const thumbnailContainer = document.getElementById('thumbnail-container');
+                        thumbnailContainer.textContent = '';
+                    }
+
+                    sendToGemini(messageArea.lastChild.textContent, imageFile);
                     // Scroll to the bottom
                     messageArea.scrollTop = messageArea.scrollHeight;
                     sendButton.disabled = false;  // disable send button
                 }
 
-                // Handle image upload
-                // TODO: fix this
-                if (imageInput.files.length > 0) {
-                    const file = imageInput.files[0];
-                    const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file);
-                    img.onload = () => URL.revokeObjectURL(img.src); // Release object URL after loading
-                    messageArea.appendChild(img);
-                    imageInput.value = '';
-                }
-
-                
                 
             });
 
