@@ -425,7 +425,7 @@
         <div id="spinner" class="spinner" style="display: none;"></div>
         <form id="message-form">
             <label id="file-upload-label" for="image-input"><i class="fas fa-paperclip icon"></i></label> <!-- Clip icon -->
-            <input type="file" id="image-input" accept="image/*">
+            <input type="file" id="image-input" accept="image/*" multiple>
             <textarea id="message-input" placeholder="Type a message..." rows="2"></textarea>
             <button id="send-button" type="submit">Send</button>
         </form>
@@ -575,14 +575,14 @@
             return result
         }
 
-        async function sendToGemini(prompt, file) {
+        async function sendToGemini(prompt, files) {
             const spinner = document.getElementById('spinner');
             spinner.style.display = 'block'; // Show the spinner
 
             let chat, result, error
-            if (file) { // call vision pro if any image exists
+            if (files) { // call vision pro if any image exists
                 try{
-                    result = await getGeminiVisionResponse(prompt, [file])
+                    result = await getGeminiVisionResponse(prompt, files)
                 } catch(e) {
                     console.warn("Error calling gemini pro vision:", e)
                     error = e
@@ -627,8 +627,6 @@
             const thumbnailContainer = document.getElementById('thumbnail-container');
 
             imageInput.addEventListener('change', function() {
-                // Clear existing thumbnails
-                thumbnailContainer.innerHTML = ''; 
                 Array.from(this.files).forEach((file, index) => {
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -706,24 +704,26 @@
                     messageArea.appendChild(div);
                     messageInput.value = '';
 
-                    let imageFile
+                    let imageFiles = [];
                     // Handle image upload
+
                     if (imageInput.files.length > 0) {
-                        const file = imageInput.files[0];
-                        const img = document.createElement('img');
-                        img.classList.add('message-image')
-                        img.src = URL.createObjectURL(file);
-                        img.onload = () => URL.revokeObjectURL(img.src); // Release object URL after loading
-                        messageArea.appendChild(img);
-                        imageInput.value = '';
-                        imageFile = file
+                        Array.from(imageInput.files).forEach((file, index) => {
+                            const img = document.createElement('img');
+                            img.classList.add('message-image')
+                            img.src = URL.createObjectURL(file);
+                            img.onload = () => URL.revokeObjectURL(img.src); // Release object URL after loading
+                            messageArea.appendChild(img);
+                            imageInput.value = '';
+                            imageFiles.push(file)
+                        });
 
                         // Remove image thumbnail
                         const thumbnailContainer = document.getElementById('thumbnail-container');
                         thumbnailContainer.textContent = '';
                     }
 
-                    sendToGemini(messageArea.lastChild.textContent, imageFile);
+                    sendToGemini(messageArea.lastChild.textContent, imageFiles);
                     // Scroll to the bottom
                     messageArea.scrollTop = messageArea.scrollHeight;
                     sendButton.disabled = false;  // disable send button
