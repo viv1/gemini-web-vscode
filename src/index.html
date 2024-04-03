@@ -580,7 +580,7 @@
             spinner.style.display = 'block'; // Show the spinner
 
             let chat, result, error
-            if (files) { // call vision pro if any image exists
+            if (files && files.length > 0) { // call vision pro if any image exists
                 try{
                     result = await getGeminiVisionResponse(prompt, files)
                 } catch(e) {
