@@ -490,6 +490,36 @@
             };
         }
 
+        // Add response of Gemini to the DOM
+        function addSystemMessage(response, is_error) {
+            const messageArea = document.getElementById('message-area');
+            const message = document.createElement('div');
+            message.classList.add('message', 'message-box');
+            if(is_error) {
+                message.classList.add('error-message');
+            }
+            message.innerHTML = response;
+            messageArea.appendChild(message);
+            Prism.highlightAll(); // Highlight the code block
+
+            document.querySelectorAll(".copy-button").forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const textArea = document.createElement('textarea');
+                    // textArea.style.display = "hidden";
+                    textArea.value = btn.nextSibling.textContent;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+
+                    btn.textContent = "Copied!"
+                    setTimeout(() => {
+                        btn.textContent = 'Copy';
+                    }, 2000);
+                });
+            })
+        }
+
         async function getGeminiChatInstance() {
             if (geminiChat) return geminiChat;
             
@@ -532,35 +562,6 @@
             geminiChat = model.startChat(initialContext);
             return geminiChat;
       }
-
-        function addSystemMessage(response, is_error) {
-            const messageArea = document.getElementById('message-area');
-            const message = document.createElement('div');
-            message.classList.add('message', 'message-box');
-            if(is_error) {
-                message.classList.add('error-message');
-            }
-            message.innerHTML = response;
-            messageArea.appendChild(message);
-            Prism.highlightAll(); // Highlight the code block
-
-            document.querySelectorAll(".copy-button").forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const textArea = document.createElement('textarea');
-                    // textArea.style.display = "hidden";
-                    textArea.value = btn.nextSibling.textContent;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-
-                    btn.textContent = "Copied!"
-                    setTimeout(() => {
-                        btn.textContent = 'Copy';
-                    }, 2000);
-                });
-            })
-        }
 
         async function getGeminiVisionResponse(prompt, files) {
             const imageParts = await Promise.all(
