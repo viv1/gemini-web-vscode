@@ -3,6 +3,7 @@
 out/**
 node_modules/**
 src/**
+!src/assets/icon.jpeg
 .gitignore
 .yarnrc
 webpack.config.js
@@ -12,3 +13,4 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+*.gif
