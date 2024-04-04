@@ -6,7 +6,13 @@
   "engines": {
     "vscode": "^1.87.0"
   },
+  "publisher": "wewake",
+  "author": "wewake",
   "icon": "src/assets/icon.jpeg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viv1/gemini-web-vscode"
+  },
   "categories": [
     "Visualization",
     "Debuggers",
