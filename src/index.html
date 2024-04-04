@@ -403,6 +403,14 @@
             width: 100%;
         }
 
+        .settings-input {
+            margin-bottom: 8px;
+        }
+
+        .api-key-link {
+            color: cornflowerblue;
+        }
+
     </style>
     <!-- Importing Prism.js for code snippet highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
@@ -436,8 +444,9 @@
     <div id="settings-dialog">
         <button class="close-button">&#10006;</button> <!-- X icon -->
         <h2>Settings</h2>
-        <input type="text" id="settings-input" placeholder="Enter value...">
+        <input type="text" id="settings-input" class="settings-input" placeholder="Enter value...">
         <div id="error-message" class="error" style="display: none;"></div>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">Get Gemini API Key</a>
         <button id="save-settings">Save</button>
     </div>
 
