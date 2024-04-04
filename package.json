@@ -2,7 +2,7 @@
   "name": "webchatforgemini",
   "displayName": "WebChatForGemini",
   "description": "VSCode extension to interact with Gemini without leaving the IDE",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.87.0"
   },

@@ -8,7 +8,7 @@
 
 VSCode extension to interact with Gemini without leaving the IDE.
 
-![Web Chat for Gemini](src/assets/WebChatForGemini.gif)
+![Web Chat for Gemini](WebChatForGemini.gif)
 
 ## Introduction
 
