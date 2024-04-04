@@ -2,8 +2,7 @@
 .vscode-test/**
 out/**
 node_modules/**
-src/**
-!src/assets/icon.jpeg
+src/test
 .gitignore
 .yarnrc
 webpack.config.js
