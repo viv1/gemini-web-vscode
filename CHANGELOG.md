@@ -9,4 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release with version: "0.0.1"
 - Initial release with version: "0.0.2", include demo gif 
-- Initial release with version: "0.0.3", include index file 
+- Initial release with version: "0.0.3", include index file
+
+### Added
+
+- v0.0.4 Updated README to include a tutorial post

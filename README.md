@@ -63,3 +63,6 @@ Ways to help:
 
 ## Support
 For any inquiries or assistance, please contact hello@wewake.dev
+
+## Tutorials
+You can refer to this informative and useful tutorial on **Web Chat for Gemini** : [WebChatForGemini : The VSCode Companion](https://coderlegion.com/264/webchatforgemini-the-vscode-companion).
