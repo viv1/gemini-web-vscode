@@ -12,6 +12,8 @@ VSCode extension to interact with Gemini without leaving the IDE.
 
 ## Introduction
 
+> NOTE: This extension is updated to use the Gemini 1.5 Flash APIs instead of the Gemini Pro Vision. Gemini 1.5 Flash is Google's next-generation model that is faster and more cost-efficient with advanced vision understanding. Also, the Pro vision API is getting deprecated on July 12, 2024.
+
 Have a quick question on your code or confused about the syntax ? Maybe you want to explore different ways to do a task. Or maybe you want a feedback on an image you are using, all **without spending a dime** ?
 
 Using "**Web Chat for Gemini**", you can do all this, and more without leaving your VS code IDE. This extension gives you the ability to interact with the Gemini Pro APIs through your IDE. 
@@ -23,7 +25,7 @@ Ask the extension anything from generating code to getting feedback on your code
 Get your API key [here](https://aistudio.google.com/app/), and start harnessing the power.
 
 ## Features
-- ✨ Powered by Gemini pro and pro vision APIs
+- ✨ Powered by Gemini pro and Gemini 1.5 Flash APIs
 - ✨ Provides relevant code and text outputs based on user inputs
 - ✨ Remembers chat context and history, can carry long conversations
 - ✨ Supports multi modal input (text and images)

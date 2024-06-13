@@ -14,3 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - v0.0.4 Updated README to include a tutorial post
+
+### Added
+
+- v0.0.5 Replacing 'Gemini Pro Vision' with 'Gemini 1.5 Flash' , as the 'Gemini Pro Vision' will be deprecated on Jul 12, 2024
