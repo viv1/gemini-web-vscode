@@ -26,7 +26,10 @@
     "GenAI",
     "Gemini"
 ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:webchatforgemini.open",
+    "onCommand:webchatforgemini.openTripBudget"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "views": {
@@ -41,6 +44,10 @@
       {
         "command": "webchatforgemini.open",
         "title": "Web Chat for Gemini"
+      },
+      {
+        "command": "webchatforgemini.openTripBudget",
+        "title": "Trip Budget Companion"
       }
     ]
   },
