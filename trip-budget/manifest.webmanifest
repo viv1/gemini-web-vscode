@@ -1,0 +1,15 @@
+{
+  "name": "Mon voyage — budget & carnet de route",
+  "short_name": "Mon voyage",
+  "description": "Budget, étapes, rappels et bagages pour un voyage en Malaisie.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f4ef",
+  "theme_color": "#f5f4ef",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"},
+    {"src":"./apple-touch-icon.png","sizes":"180x180","type":"image/png","purpose":"any"}
+  ]
+}
